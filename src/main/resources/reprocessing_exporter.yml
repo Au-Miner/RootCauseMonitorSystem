@@ -1,0 +1,57 @@
+os_cpu_user_usage:
+  desc: user
+  promql: "
+    label_replace(
+      sum(irate(node_cpu_seconds_total{mode='user'}[3m])) by (job, instance) / 
+      sum(irate(node_cpu_seconds_total[3m])) by (job, instance),
+      'instance', '$1', 'instance', '(.*):.*')
+  "
+  metrics:
+    - name: from_job
+      label: job
+      description: from job
+      usage: LABEL
+    - name: from_instance
+      label: instance
+      description: from instance
+      usage: LABEL
+  status: enable
+  ttl: 10
+  timeout: 5
+
+
+os_disk_usage:
+  name: os_disk_usage
+  desc: os_disk_usage
+  promql: "
+  label_replace(
+    1 - ((node_filesystem_avail_bytes{fstype=~'ext.|xfs'}) / node_filesystem_size_bytes{fstype=~'ext.|xfs'}),
+    'instance', '$1', 'instance', '(.*):.*')
+  "
+  metrics:
+    - name: from_job
+      label: job
+      description: job
+      usage: LABEL
+    - name: from_instance
+      label: instance
+      description: instance
+      usage: LABEL
+    - name: fstype
+      label: fstype
+      description: fstype
+      usage: LABEL
+    - name: mountpoint
+      label: mountpoint
+      description: mountpoint
+      usage: LABEL
+    - name: device
+      label: device
+      description: device
+      usage: LABEL
+  status: enable
+  ttl: 10
+  timeout: 5
+
+
+
